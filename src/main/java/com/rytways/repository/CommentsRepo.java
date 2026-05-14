@@ -10,5 +10,7 @@ import com.rytways.model.Comments;
 @Repository
 public interface CommentsRepo extends JpaRepository<Comments, Integer> {
 
-	List<Comments> findByDocsId(int docsId);
+//	List<Comments> findByDocsId(int docsId);
+
+	List<Comments> findByReportDocId(int reportDocId);
 }

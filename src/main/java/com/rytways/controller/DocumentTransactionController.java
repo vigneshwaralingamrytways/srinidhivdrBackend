@@ -37,6 +37,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import com.rytways.model.DocumentAccessHistory;
 import com.rytways.model.DocumentTransaction;
 import com.rytways.model.ReportDocument;
+import com.rytways.model.SubFolderMaster;
 import com.rytways.model.Users;
 import com.rytways.repository.DocumentAccessHistoryRepo;
 import com.rytways.repository.DocumentTransactionRepo;
@@ -78,6 +79,15 @@ public class DocumentTransactionController {
 //	 @Value("${docReportUploadPathd}")
 //	  private String uploadDirectoryd;
 //	
+	
+	
+	@PostMapping("/getByDocumentTypeId")
+	public ResponseEntity<List<DocumentTransaction>> get(@RequestBody Map<String, Long> map) {
+		Long documentTypeId = map.get("documentTypeId");
+		List<DocumentTransaction> list = documentTransactionRepo.findByDocumentTypeIdOrderByUpdatedOnDesc(documentTypeId);
+		return new ResponseEntity<List<DocumentTransaction>>(list, HttpStatus.OK);
+
+	}
 	@PostMapping("/create")
 	public ResponseEntity<DocumentTransaction> createTransac(@RequestBody DocumentTransaction doc) {
 
@@ -689,6 +699,7 @@ public class DocumentTransactionController {
 
 		return new ResponseEntity<>(doc, HttpStatus.OK);
 	}
+	
 
 
 }

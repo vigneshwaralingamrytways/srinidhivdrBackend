@@ -22,6 +22,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import com.rytways.model.DocumentTransaction;
 import com.rytways.model.FormConfigMaster;
+import com.rytways.model.SubFolderMaster;
 import com.rytways.repository.FormConfigMasterRepo;
 
 
@@ -156,6 +157,92 @@ public class WriteExcelReports {
 	    };
 	}
 
+	public StreamingResponseBody ExporExcel(List<SubFolderMaster> subFolderList) throws IOException {
+	    if (subFolderList == null || subFolderList.isEmpty()) {
+	        throw new IllegalArgumentException("SubFolder list is empty");
+	    }
+
+	    Long documentTypeId = subFolderList.get(0).getDocumentTypeId();
+	    Optional<FormConfigMaster> formConfigOpt = formConfigRepository.findByDocumentTypeId(documentTypeId);
+	    if (!formConfigOpt.isPresent()) {
+	        throw new IllegalArgumentException("Invalid document type id");
+	    }
+
+	    FormConfigMaster formConfig = formConfigOpt.get();
+	    Workbook workbook = new XSSFWorkbook();
+	    Sheet sheet = workbook.createSheet("Document Report");
+	    int rowNum = 0;
+
+	    List<String> headers = new ArrayList<>();
+	    headers.add("S.No");
+	    headers.add("Document Type");
+	    headers.add("Folder Name");
+	    headers.add("Sub Folder Name");
+
+	    List<String> formItems = Arrays.asList(
+	            formConfig.getItemOne(), formConfig.getItemTwo(), formConfig.getItemThree(),
+	            formConfig.getItemFour(), formConfig.getItemFive(), formConfig.getItemSix(),
+	            formConfig.getItemSeven(), formConfig.getItemEight(), formConfig.getItemNine(),
+	            formConfig.getItemTen(), formConfig.getItemEleven(), formConfig.getItemTwelve(),
+	            formConfig.getItemThirteen(), formConfig.getItemFourteen(), formConfig.getItemFifteen()
+	    );
+
+	    for (String item : formItems) {
+	        if (item != null && !item.trim().isEmpty()) {
+	            headers.add(item);
+	        } else {
+	            break;
+	        }
+	    }
+
+	    Row headerRow = sheet.createRow(rowNum++);
+	    CellStyle style = getHeaderCellStyle(workbook);
+	    for (int i = 0; i < headers.size(); i++) {
+	        Cell cell = headerRow.createCell(i);
+	        cell.setCellValue(headers.get(i));
+	        cell.setCellStyle(style);
+	    }
+
+	    int sNo = 1;
+	    for (SubFolderMaster subFolder : subFolderList) {
+//	        DocumentTransaction doc =  
+	        Row row = sheet.createRow(rowNum++);
+	        int cellNum = 0;
+
+	        row.createCell(cellNum++).setCellValue(sNo++);
+	        
+	        row.createCell(cellNum++).setCellValue(doc != null && doc.getDocumentTypeMaster() != null ? doc.getDocumentTypeMaster().getDocumentType() : "");
+	        
+	        row.createCell(cellNum++).setCellValue(doc != null && doc.getFolderMaster() != null ? doc.getFolderMaster().getFolderCategoryName() : "");
+	        
+	        row.createCell(cellNum++).setCellValue(subFolder.getSubFolderCategoryName() != null ? subFolder.getSubFolderCategoryName() : "");
+
+	        if (doc != null) {
+	            List<String> items = Arrays.asList(
+	                doc.getItemOne(), doc.getItemTwo(), doc.getItemThree(),
+	                doc.getItemFour(), doc.getItemFive(), doc.getItemSix(),
+	                doc.getItemSeven(), doc.getItemEight(), doc.getItemNine(),
+	                doc.getItemTen(), doc.getItemEleven(), doc.getItemTwelve(),
+	                doc.getItemThirteen(), doc.getItemFourteen(), doc.getItemFifteen()
+	            );
+	            for (int i = 0; i < headers.size() - 4; i++) {
+	                row.createCell(cellNum++).setCellValue(items.get(i) != null ? items.get(i) : "");
+	            }
+	        }
+	    }
+
+	    for (int i = 0; i < headers.size(); i++) {
+	        sheet.autoSizeColumn(i);
+	    }
+
+	    return outputStream -> {
+	        try {
+	            workbook.write(outputStream);
+	        } finally {
+	            workbook.close();
+	        }
+	    };
+	}
 	private CellStyle getHeaderCellStyle(Workbook workbook) {
 	    CellStyle headerStyle = workbook.createCellStyle();
 	    Font font = workbook.createFont();

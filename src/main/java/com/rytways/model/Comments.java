@@ -16,7 +16,7 @@ public class Comments extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
 	private int commentsId;
-	private int docsId;
+	private int reportDocId;
 	@Lob
 	@Column(columnDefinition = "LONGTEXT")
 	private String comments;

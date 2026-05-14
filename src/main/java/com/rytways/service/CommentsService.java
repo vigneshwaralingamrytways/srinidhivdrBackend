@@ -22,7 +22,7 @@ public class CommentsService {
 		return commentsRepo.findById(commentId).orElseThrow(() -> new RuntimeException("Comment not found"));
 	}
 
-	public List<Comments> getByDocId(int docsID) {
-		return commentsRepo.findByDocsId(docsID);
+	public List<Comments> getByDocId(int reportDocId) {
+		return commentsRepo.findByReportDocId(reportDocId);
 	}
 }

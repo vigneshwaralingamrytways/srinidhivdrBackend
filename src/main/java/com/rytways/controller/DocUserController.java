@@ -1,6 +1,7 @@
 package com.rytways.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.rytways.model.DocumentUserMaster;
-import com.rytways.model.FolderMaster;
-import com.rytways.model.ReportDocument;
 import com.rytways.repository.DocumentUserMasterRepo;
 import com.rytways.service.DocumentUserService;
 
@@ -72,11 +71,11 @@ public class DocUserController {
 	}
 
 	
-//	@PostMapping("/getListByDocIdAndUserId")
-//	public ResponseEntity<List<DocumentUserMaster>> getListByUserIdAndDocID(@RequestBody DocumentUserMaster doc) {
-//	    List<DocumentUserMaster> folderList = documentUserMasterRepo.findByDocumentTypeIdAndUserIdOrderByUpdatedOn(doc.getDocumentTypeId(), doc.getUserId());
-//	    return new ResponseEntity<>(folderList, HttpStatus.OK);
-//	}
+	@PostMapping("/getListByDocIdAndUserId")
+	public ResponseEntity<Optional<DocumentUserMaster>> getListByUserIdAndDocID(@RequestBody DocumentUserMaster doc) {
+		Optional<DocumentUserMaster> folderList = documentUserMasterRepo.findByDocumentTypeIdAndUserIdOrderByUpdatedOn(doc.getDocumentTypeId(), doc.getUserId());
+	    return new ResponseEntity<>(folderList, HttpStatus.OK);
+	}
 
 	
 }

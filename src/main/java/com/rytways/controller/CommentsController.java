@@ -20,9 +20,9 @@ public class CommentsController {
 	@Autowired
 	CommentsService commentService;
 
-	@GetMapping("/getComments/{docsId}")
-	public List<Comments> getComments(@PathVariable int docsId) {
-		return commentService.getByDocId(docsId);
+	@GetMapping("/getComments/{reportDocId}")
+	public List<Comments> getComments(@PathVariable int reportDocId) {
+		return commentService.getByDocId(reportDocId);
 	}
 
 	@PostMapping("/saveComments")

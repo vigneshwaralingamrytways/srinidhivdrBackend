@@ -14,4 +14,7 @@ public interface SubFolderMasterRepo extends JpaRepository<SubFolderMaster, Long
 
 	List<SubFolderMaster> findByDocumentTypeIdAndFolderIdOrderByUpdatedOn(Long documentTypeId, Long folderId);
 
+	
+	List<SubFolderMaster> findByDocumentTypeId(Long documentTypeId);
+
 }

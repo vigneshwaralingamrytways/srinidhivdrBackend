@@ -16,7 +16,7 @@ public interface DocumentUserMasterRepo extends JpaRepository<DocumentUserMaster
 
 	List<DocumentUserMaster> findByUserIdOrderByUpdatedOn(Integer userId);
 
-	List<DocumentUserMaster> findByDocumentTypeIdAndUserIdOrderByUpdatedOn(Long documentTypeId, Integer userId);
+	Optional<DocumentUserMaster>findByDocumentTypeIdAndUserIdOrderByUpdatedOn(Long documentTypeId, Integer userId);
 
 	Optional<DocumentUserMaster> findByUserIdAndDocumentTypeId(Integer userId, Long documentTypeId);
 
