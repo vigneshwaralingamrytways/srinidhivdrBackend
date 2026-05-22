@@ -44,8 +44,16 @@ public class DocTypeMasterController {
 	}
 
 	@GetMapping("/documentTypeMaster")
-	public ResponseEntity<List<DocumentTypeMaster>> listDoc() {
+	public ResponseEntity<List<DocumentTypeMaster>> listAllActiveDoc() {
 		List<DocumentTypeMaster> doc = documentTypeRepo.findByStatus("Active");
+//		List<DocumentTypeMaster> doc = docTypeService.getDocTypes(userId);
+		return new ResponseEntity<>(doc, HttpStatus.OK);
+	}
+
+	@GetMapping("/documentTypeMaster/{userId}")
+	public ResponseEntity<List<DocumentTypeMaster>> listDoc(@PathVariable Integer userId) {
+//		List<DocumentTypeMaster> doc = documentTypeRepo.findByStatus("Active");
+		List<DocumentTypeMaster> doc = docTypeService.getDocTypes(userId);
 		return new ResponseEntity<>(doc, HttpStatus.OK);
 	}
 
@@ -83,7 +91,5 @@ public class DocTypeMasterController {
 		List<DocumentTypeMaster> entry = docTypeService.searchDocTypes(documentType);
 		return new ResponseEntity<List<DocumentTypeMaster>>(entry, HttpStatus.OK);
 	}
-
-	
 
 }

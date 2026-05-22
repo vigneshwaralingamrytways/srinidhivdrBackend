@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,6 +42,7 @@ import com.rytways.model.SubFolderMaster;
 import com.rytways.model.Users;
 import com.rytways.repository.DocumentAccessHistoryRepo;
 import com.rytways.repository.DocumentTransactionRepo;
+import com.rytways.repository.DownloadHistoryRepo;
 import com.rytways.repository.ReportDocumentRepo;
 import com.rytways.repository.UserRepository;
 import com.rytways.security.SecurityUtils;
@@ -52,6 +54,9 @@ import com.rytways.service.WriteExcelReports;
 @RequestMapping("/documentTransaction")
 public class DocumentTransactionController {
 
+
+	@Autowired
+	private DownloadHistoryRepo downloadHistoryRepo;
 	@Autowired
 	private DocumentTransactionRepo documentTransactionRepo;
 
@@ -699,7 +704,49 @@ public class DocumentTransactionController {
 
 		return new ResponseEntity<>(doc, HttpStatus.OK);
 	}
-	
+	@Transactional
+	@PostMapping("/deleteFile")
+	public ResponseEntity<Map<String, Object>> deleteFile(@RequestBody ReportDocument request) {
+		Map<String, Object> response = new HashMap<>();
+		try {
+			Long reportDocId = request.getReportDocId();
+
+			Optional<ReportDocument> reportOptional = reportDocumentRepo.findById(reportDocId);
+			if (!reportOptional.isPresent()) {
+				response.put("message", "File record not found in database");
+				response.put("status", 0);
+				return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+			}
+
+			ReportDocument reportDoc = reportOptional.get();
+
+			Path filePath;
+			if (reportDoc.getDeleteFilePath().startsWith(uploadDirectory)) {
+				filePath = Paths.get(reportDoc.getDeleteFilePath(), reportDoc.getGeneratedFileName());
+			} else {
+				filePath = Paths.get(uploadDirectory, reportDoc.getDeleteFilePath(), reportDoc.getGeneratedFileName());
+			}
+
+			File file = filePath.toFile();
+			if (file.exists()) {
+				file.delete();
+			}
+			downloadHistoryRepo.deleteByReportDocId(reportDocId);
+			documentAccessHistoryRepo.deleteByReportDocId(reportDocId);
+			reportDocumentRepo.deleteById(reportDocId);
+
+			response.put("message", "File and record deleted successfully");
+			response.put("status", 1);
+			return new ResponseEntity<>(response, HttpStatus.OK);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			response.put("message", "Error occurred: " + e.getMessage());
+			response.put("status", 0);
+			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
 
 
 }
