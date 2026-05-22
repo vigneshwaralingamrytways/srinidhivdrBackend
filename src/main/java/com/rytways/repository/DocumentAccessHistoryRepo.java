@@ -17,4 +17,6 @@ public interface DocumentAccessHistoryRepo extends JpaRepository<DocumentAccessH
 
 	List<DocumentAccessHistory> findByTransactionId(Long transactionId);
 
+	void deleteByReportDocId(Long reportDocId);
+
 }

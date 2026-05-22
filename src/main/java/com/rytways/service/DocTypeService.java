@@ -2,6 +2,7 @@ package com.rytways.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -12,13 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.rytways.dto.LoadOptionsDto;
 import com.rytways.model.DocumentTypeMaster;
-import com.rytways.model.SubFolderMaster;
-import com.rytways.model.Task;
+import com.rytways.model.DocumentUserMaster;
 import com.rytways.repository.DocumentTypeRepo;
+import com.rytways.repository.DocumentUserMasterRepo;
 import com.rytways.repository.FolderRepository;
 import com.rytways.repository.SubFolderMasterRepo;
 import com.rytways.specifications.DocumentTypeSpecification;
-import com.rytways.specifications.TaskSpecification;
 
 @Component
 @Service
@@ -33,11 +33,21 @@ public class DocTypeService {
 
 	@Autowired
 	private SubFolderMasterRepo subFolderMasterRepo;
+	@Autowired
+	private DocumentUserMasterRepo documentUserMasterRepo;
 
 	public DocumentTypeMaster createType(DocumentTypeMaster doc) {
 
 		doc = documentTypeRepo.save(doc);
 		return doc;
+	}
+
+	public List<DocumentTypeMaster> getDocTypes(Integer userId) {
+		if (userId == null) {
+			return new ArrayList<>();
+		}
+		return documentTypeRepo.findActiveDocsByUserId(userId);
+
 	}
 
 	public List<LoadOptionsDto> loadType() {
@@ -91,5 +101,4 @@ public class DocTypeService {
 		return documentTypeRepo.findAll(combinedSpec, sort);
 	}
 
-	 
 }
